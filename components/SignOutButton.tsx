@@ -6,7 +6,7 @@ const SignOutButton = () => {
   const { signOut } = useSession();
   return ( 
     <Button variant="ghost" onPress={() => signOut()}>
-      <LogOut />
+      <LogOut className='text-foreground'/>
     </Button>
    );
 }

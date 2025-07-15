@@ -68,7 +68,7 @@ export default function SignInScreen() {
             }}
           >
             <Text>
-              <LogIn className='inline me-1 h-4 w-4'/> Sign In
+              <LogIn className='inline me-1 h-4 w-4 text-foreground'/> Sign In
             </Text>
           </Button>
         </CardFooter>

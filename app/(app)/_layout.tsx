@@ -15,7 +15,7 @@ export default function TabsLayout() {
         name='spending'
         options={{
           title: 'Spending',
-          tabBarIcon: () => <ShoppingCart />,
+          tabBarIcon: () => <ShoppingCart className='text-foreground'/>,
           headerRight: () => <ThemeToggle />,
         }}
       />
@@ -23,7 +23,7 @@ export default function TabsLayout() {
         name='index'
         options={{
           title: 'Report',
-          tabBarIcon: () => <PieChart/>,
+          tabBarIcon: () => <PieChart className='text-foreground'/>,
           headerRight: () => <ThemeToggle />,
         }}
       />
@@ -31,7 +31,7 @@ export default function TabsLayout() {
         name='income'
         options={{
           title: 'Income',
-          tabBarIcon: () => <PiggyBank />,
+          tabBarIcon: () => <PiggyBank className='text-foreground'/>,
           headerRight: () => <ThemeToggle />,
         }}
       />
