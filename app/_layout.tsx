@@ -13,6 +13,7 @@ import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { Text } from '~/components/ui/text';
 import { SessionProvider, useSession } from '~/lib/context';
 import { SplashScreenController } from '~/lib/splash';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -41,14 +42,16 @@ export default function RootLayout() {
   const { isDarkColorScheme } = useColorScheme();
 
   return (
-    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <SessionProvider>
-        <SplashScreenController />
-        <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-        <RootNavigator />
-      </SessionProvider>
-      <PortalHost />
-    </ThemeProvider>
+    <GestureHandlerRootView>
+      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+        <SessionProvider>
+          <SplashScreenController />
+          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+          <RootNavigator />
+        </SessionProvider>
+        <PortalHost />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 

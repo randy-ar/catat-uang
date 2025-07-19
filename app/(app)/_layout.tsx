@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
 import { PieChart, PiggyBank, ShoppingCart } from 'lucide-react-native';
+import { Alert } from 'react-native';
 import SignOutButton from '~/components/SignOutButton';
 import { ThemeToggle } from '~/components/ThemeToggle';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 export default function TabsLayout() {
   return (
@@ -10,12 +12,13 @@ export default function TabsLayout() {
         headerLeft: () => {
           return <SignOutButton />;
         },
+        headerShown: false,
       }}>
       <Tabs.Screen
         name='spending'
         options={{
           title: 'Spending',
-          tabBarIcon: () => <ShoppingCart className='text-foreground'/>,
+          tabBarIcon: (tab) => <ShoppingCart color={tab.color}/>,
           headerRight: () => <ThemeToggle />,
         }}
       />
@@ -23,7 +26,7 @@ export default function TabsLayout() {
         name='index'
         options={{
           title: 'Report',
-          tabBarIcon: () => <PieChart className='text-foreground'/>,
+          tabBarIcon: (tab) => <PieChart color={tab.color}/>,
           headerRight: () => <ThemeToggle />,
         }}
       />
@@ -31,7 +34,7 @@ export default function TabsLayout() {
         name='income'
         options={{
           title: 'Income',
-          tabBarIcon: () => <PiggyBank className='text-foreground'/>,
+          tabBarIcon: (tab) => <PiggyBank color={tab.color}/>,
           headerRight: () => <ThemeToggle />,
         }}
       />

@@ -9,6 +9,7 @@ import { Label } from '~/components/ui/label';
 
 import { useSession } from '~/lib/context';
 import { LogIn } from 'lucide-react-native';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 interface ErrorProps{
   email: string;
@@ -23,6 +24,7 @@ export default function SignInScreen() {
     email: '',
     password: '',
   });
+  const colorScheme = useColorScheme();
 
   return (
     <View className='flex-1 justify-center items-center gap-5 p-6'>
@@ -58,7 +60,7 @@ export default function SignInScreen() {
         </CardContent>
         <CardFooter>
           <Button 
-            className='w-full'
+            className='w-full flex flex-row items-center justify-center'
             variant="default"
             onPress={() => {
               signIn();
@@ -67,8 +69,9 @@ export default function SignInScreen() {
               router.replace('/');
             }}
           >
-            <Text>
-              <LogIn className='inline me-1 h-4 w-4 text-foreground'/> Sign In
+            <LogIn className='inline me-1 h-4 w-4' size={16} color={colorScheme.colorScheme === 'dark' ? 'black' : 'white'}/>
+            <Text className='ms-2'>
+              Sign In
             </Text>
           </Button>
         </CardFooter>
