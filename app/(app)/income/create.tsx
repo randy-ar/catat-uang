@@ -66,6 +66,9 @@ const formSchema = z.object({
   name: z.string().min(1, {
     message: 'Enter a income name.',
   }),
+  amount: z.number().min(1000, {
+    message: 'Income amount must be at least Rp. 1.000.',
+  }),
   description: z.string().optional().nullable(),
   category: z.object(
     { value: z.string(), label: z.string() }
@@ -82,7 +85,9 @@ const CreateIncomeScreen = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      description: '',
+      amount: undefined,
+      description: null,
+      category: undefined,
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -136,8 +141,8 @@ const CreateIncomeScreen = () => {
               className='opacity-95 bg-primary text-primary-foreground border border-border flex-col p-4 rounded-xl'
             >
               <View className='gap-1.5'>
-                <Toast.Title className='text-xl font-semibold'>Success!</Toast.Title>
-                <Toast.Description>
+                <Toast.Title className='text-xl font-semibold text-primary-foreground'>Success!</Toast.Title>
+                <Toast.Description className="text-primary-foreground">
                   Income has been created.
                 </Toast.Description>
               </View>
@@ -153,7 +158,27 @@ const CreateIncomeScreen = () => {
         </Portal>
       )}
       <Form {...form}>
-      <View className="flex-1 gap-6">
+        <View className="flex-1 gap-6">
+          <FormField 
+            name='amount'
+            control={form.control}
+            render={({ field }) => (
+              <FormInput
+                inputMode="numeric"
+                label="Amount"
+                placeholder="Enter Income Amount"
+                keyboardType="numeric"
+                {...field}
+                value={field.value ? field.value.toLocaleString('id-ID') : ''}
+                onChange={(text) => {
+                  // Hapus karakter non-digit untuk menangani input yang diformat
+                  const sanitizedText = text.replace(/[^0-9]/g, '');
+                  const parsed = Number.parseInt(sanitizedText, 10);
+                  field.onChange(Number.isNaN(parsed) ? undefined : parsed);
+                }}
+              />
+            )}
+          />
           <FormField 
             name='name'
             control={form.control}
@@ -210,10 +235,10 @@ const CreateIncomeScreen = () => {
               />
             )}
           />
-      </View>
-      <Button onPress={form.handleSubmit(onSubmit)} className="flex flex-row items-center justify-center gap-2">
-        <Save size={16} color={colorScheme.colorScheme === 'dark' ? 'black' : 'white'} className="inline"/><Text>Save</Text>
-      </Button>
+        </View>
+        <Button onPress={form.handleSubmit(onSubmit)} className="flex flex-row items-center justify-center gap-2">
+          <Save size={16} color={colorScheme.colorScheme === 'dark' ? 'black' : 'white'} className="inline"/><Text>Save</Text>
+        </Button>
       </Form>
     </View>
   );

@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { ChevronRight, Plus, TrendingUp } from "lucide-react-native";
-import { ScrollView, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
@@ -8,54 +8,14 @@ import { Text } from "~/components/ui/text";
 import { Code, H1, H3, Large, Lead, Muted, Small } from "~/components/ui/typography";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { iconWithClassName } from "~/lib/icons/iconWithClassName";
+import { IncomeData } from "~/lib/constDummyData";
+import { IncomeType } from "~/lib/types/income/income";
 iconWithClassName(Plus);
 iconWithClassName(TrendingUp);
 
-interface IncomeType{
-  name: string;
-  amount: number;
-  date: Date;
-  description: string | null;
-  category: IncomeCategoryType | null;
-}
-
-interface IncomeCategoryType{
-  name: string;
-}
-
-const income: IncomeType[] = [
-  {
-    name: "Salary",
-    amount: 10000,
-    date: new Date(),
-    description: "Monthly salary",
-    category: {
-      name: "Salary"
-    }
-  },
-  {
-    name: "Freelance",
-    amount: 5000,
-    date: new Date(),
-    description: "Freelance work",
-    category: {
-      name: "Freelance"
-    }
-  },
-  {
-    name: "Gift",
-    amount: 5000,
-    date: new Date(),
-    description: "Gift from parents",
-    category: {
-      name: "Gift"
-    }
-  }
-]
-
 const IncomeScreen = () => {
   const colorScheme = useColorScheme();
-  console.log("Rendering Income Screen")
+  const income: IncomeType[] = IncomeData;
   return (
     <>
       <ScrollView className="flex-1">
@@ -82,18 +42,21 @@ const IncomeScreen = () => {
             </CardContent>
           </Card>
           {income.map((item, index) => (
-            <Card key={index} className="shadow-none mb-3">
-              <CardContent className="flex-1 flex flex-row h-full m-0 p-4 items-between justify-center relative">
-                <View className="grow">
-                  <Text>{item.name}</Text>
-                  <Text>{item.date.toLocaleDateString()}</Text>
-                </View>
-                <View className="flex-none my-auto flex-row items-center justify-end">
-                  <Text className="me-3">Rp. {item.amount.toLocaleString('id-ID')}</Text>
-                  <ChevronRight color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} className="inline" />
-                </View>
-              </CardContent>
-            </Card>
+            <TouchableOpacity onPress={() => router.push(`/income/${item.id}`) }
+            key={index}>
+              <Card className="shadow-none mb-3">
+                <CardContent className="flex-1 flex flex-row h-full m-0 p-4 items-between justify-center relative">
+                  <View className="grow">
+                    <Text>{item.name}</Text>
+                    <Text>{item.date}</Text>
+                  </View>
+                  <View className="flex-none my-auto flex-row items-center justify-end">
+                    <Text className="me-3">Rp. {item.amount.toLocaleString('id-ID')}</Text>
+                    <ChevronRight color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} className="inline" />
+                  </View>
+                </CardContent>
+              </Card>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>

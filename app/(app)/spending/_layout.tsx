@@ -36,6 +36,12 @@ export default function SpendingLayout() {
           title: 'Save Receipt',
         }}
       />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: 'Details Spending',
+        }}
+      />
     </Stack>
   );
 }

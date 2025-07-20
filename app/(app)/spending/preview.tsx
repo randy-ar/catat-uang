@@ -191,8 +191,8 @@ const PreviewSpendingScreen = () => {
                     className='opacity-95 bg-primary text-primary-foreground border border-border flex-col p-4 rounded-xl'
                   >
                     <View className='gap-1.5'>
-                      <Toast.Title className='text-xl font-semibold'>Success!</Toast.Title>
-                      <Toast.Description>
+                      <Toast.Title className='text-xl font-semibold text-primary-foreground'>Success!</Toast.Title>
+                      <Toast.Description className="text-primary-foreground">
                         Income has been created.
                       </Toast.Description>
                     </View>

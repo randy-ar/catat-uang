@@ -30,6 +30,12 @@ export default function IncomeLayout() {
           title: 'Add Income',
         }}
       />
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: 'Details Income',
+        }}
+      />
     </Stack>
   );
 }
