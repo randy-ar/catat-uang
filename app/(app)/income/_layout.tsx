@@ -5,9 +5,9 @@ import SignOutButton from '~/components/SignOutButton';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { useColorScheme } from '~/lib/useColorScheme';
 
-export default function SpendingLayout() {
+export default function IncomeLayout() {
   return (
-    <Stack 
+    <Stack
       screenOptions={{
         headerShown: true,
         headerRight: () => <ThemeToggle />,
@@ -27,13 +27,7 @@ export default function SpendingLayout() {
       <Stack.Screen
         name="create"
         options={{
-          title: 'Add Spending',
-        }}
-      />
-      <Stack.Screen
-        name="preview"
-        options={{
-          title: 'Save Receipt',
+          title: 'Add Income',
         }}
       />
     </Stack>

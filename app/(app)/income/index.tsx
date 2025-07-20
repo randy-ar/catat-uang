@@ -1,94 +1,71 @@
 import { router } from "expo-router";
 import { ChevronRight, Plus, TrendingUp } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
+import { Code, H1, H3, Large, Lead, Muted, Small } from "~/components/ui/typography";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { iconWithClassName } from "~/lib/icons/iconWithClassName";
-import { H3, Muted, Small } from "~/components/ui/typography";
-import { Badge } from "~/components/ui/badge";
-iconWithClassName(ChevronRight);
 iconWithClassName(Plus);
 iconWithClassName(TrendingUp);
 
-
-interface SpendingType{
+interface IncomeType{
   name: string;
-  date: string;
   amount: number;
+  date: Date;
+  description: string | null;
+  category: IncomeCategoryType | null;
 }
 
-const spending: SpendingType[] = [
-  {
-    name: "Almaz Fried Chicken",
-    date: "21 July 2023",
-    amount: 66000
-  },  {
-    name: "Starbucks",
-    date: "20 July 2023",
-    amount: 50000
-  },
-  {
-    name: "Cinema XXI",
-    date: "19 July 2023",
-    amount: 80000
-  },
-  {
-    name: "Gramedia",
-    date: "18 July 2023",
-    amount: 120000
-  },
-  {
-    name: "Gojek",
-    date: "17 July 2023",
-    amount: 25000
-  },
-  {
-    name: "Indomaret",
-    date: "16 July 2023",
-    amount: 35000
-  },
-  {
-    name: "Netflix Subscription",
-    date: "15 July 2023",
-    amount: 150000
-  },
-  {
-    name: "Local Cafe",
-    date: "14 July 2023",
-    amount: 45000
-  },
-  {
-    name: "Online Shopping",
-    date: "13 July 2023",
-    amount: 200000
-  },
-  {
-    name: "Gym Membership",
-    date: "12 July 2023",
-    amount: 100000
-  },
-  {
-    name: "Restaurant Dinner",
-    date: "11 July 2023",
-    amount: 90000
-  },
+interface IncomeCategoryType{
+  name: string;
+}
 
+const income: IncomeType[] = [
+  {
+    name: "Salary",
+    amount: 10000,
+    date: new Date(),
+    description: "Monthly salary",
+    category: {
+      name: "Salary"
+    }
+  },
+  {
+    name: "Freelance",
+    amount: 5000,
+    date: new Date(),
+    description: "Freelance work",
+    category: {
+      name: "Freelance"
+    }
+  },
+  {
+    name: "Gift",
+    amount: 5000,
+    date: new Date(),
+    description: "Gift from parents",
+    category: {
+      name: "Gift"
+    }
+  }
 ]
 
-const SpendingScreen = () => {
+const IncomeScreen = () => {
   const colorScheme = useColorScheme();
-  return ( 
+  console.log("Rendering Income Screen")
+  return (
     <>
-      <ScrollView className="flex-1 bg-background">
+      <ScrollView className="flex-1">
         <View className="flex-1 min-h-screen p-8">
           <Card className="shadow-none mb-6">
             <CardContent className="py-4">
               <View className="flex flex-row justify-between items-center mb-2">
-                <Muted>Total Spending</Muted>
-                <Badge variant="danger" className="flex flex-row items-center justify-center gap-2">
-                  <TrendingUp className="text-rose-950 dark:text-rose-700" size={14}/>
+                <Muted>Total Income</Muted>
+                <Badge variant="success" className="flex flex-row items-center justify-center gap-2">
+                  <TrendingUp className="text-green-950 dark:text-green-700" size={14}/>
                   <Text>+ 12.5%</Text>
                 </Badge>
               </View>
@@ -104,12 +81,12 @@ const SpendingScreen = () => {
               </Small>
             </CardContent>
           </Card>
-          {spending.map((item, index) => (
+          {income.map((item, index) => (
             <Card key={index} className="shadow-none mb-3">
               <CardContent className="flex-1 flex flex-row h-full m-0 p-4 items-between justify-center relative">
                 <View className="grow">
                   <Text>{item.name}</Text>
-                  <Text>{item.date}</Text>
+                  <Text>{item.date.toLocaleDateString()}</Text>
                 </View>
                 <View className="flex-none my-auto flex-row items-center justify-end">
                   <Text className="me-3">Rp. {item.amount.toLocaleString('id-ID')}</Text>
@@ -121,16 +98,16 @@ const SpendingScreen = () => {
         </View>
       </ScrollView>
       <View className="sticky bottom-0 flex-row justify-between items-center px-8 pt-6 pb-4">
-        <Text className="text-2xl font-bold">Spending</Text>
+        <Text className="text-2xl font-bold">Income</Text>
         <Button className="flex flex-row items-center justify-between" onPress={() => {
-          router.navigate('/spending/create');
+          router.navigate('/income/create');
         }}>
           <Plus size={16} color={colorScheme.colorScheme === 'dark' ? 'black' : 'white'} />
-          <Text className="text-sm ms-2 font-medium">Add Spending</Text>
+          <Text className="text-sm ms-2 font-medium">Add Income</Text>
         </Button>
       </View>
-    </>
+    </> 
    );
 }
  
-export default SpendingScreen;
+export default IncomeScreen;
