@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "504515461272",
+    "project_id": "backend-catat-uang",
+    "storage_bucket": "backend-catat-uang.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504515461272:android:5cd9612bc46ce7b33390ed",
+        "android_client_info": {
+          "package_name": "com.rar.catatuang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "504515461272-uums2nnf9isoignisck8dqlf154dmkpi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rar.catatuang",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "504515461272-d3kg4gpusgfcu072k6qci2mvb4556vmg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_X4vQGbXcAhV6iqT3jZEEJNXK86vQrnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "504515461272-d3kg4gpusgfcu072k6qci2mvb4556vmg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "504515461272-ann867hfbegktjk7atgk6kcvuounnban.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rar.catatuang"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation
 import { RelativePathString, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { Appearance, Platform, View } from 'react-native';
+import { ActivityIndicator, Appearance, Platform, View } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
@@ -14,7 +14,7 @@ import { Text } from '~/components/ui/text';
 import { SessionProvider, useSession } from '~/lib/context';
 import { SplashScreenController } from '~/lib/splash';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   colors: NAV_THEME.light,
@@ -39,6 +39,7 @@ const LOGIN = true;
 
 export default function RootLayout() {
   usePlatformSpecificSetup();
+  const auth = getAuth();
   const { isDarkColorScheme } = useColorScheme();
 
   return (
