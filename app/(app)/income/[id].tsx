@@ -21,20 +21,50 @@ import {
 } from '~/components/ui/alert-dialog';
 import { Portal } from "@rn-primitives/portal";
 import * as Toast from '@rn-primitives/toast';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import api from "~/lib/useAxios";
+import { AxiosError } from "axios";
+import { Skeleton } from "~/components/ui/skeleton";
 
 const DetailsIncomeScreen = () => {
   const { id } = useLocalSearchParams();
-  const incomeList: IncomeType[] = IncomeData;
-  const income = incomeList.find((item) => item.id === parseInt(id as string));
+  const [income, setIncome] = useState<IncomeType>();
+  const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
   const insets = useSafeAreaInsets();
 
+  useEffect(() => {
+    setLoading(true)
+    api.get(`/incomes/${id}`)
+    .then(res => res.data)
+    .then((res) => {
+      setIncome(res);
+    })
+    .catch((err) => {
+      const e = err as AxiosError;
+      console.log("ERROR :", e.request)
+    })
+    .finally(() => {
+      setLoading(false)
+    })
+  }, [])
+
   const onSubmit = () => {
-    setOpen(true);
-    router.navigate('/income');
+    setLoading(true)
+    api.delete(`/incomes/${id}`)
+    .then(res => res.data)
+    .then((res) => {
+      console.log("DELETE RESPONSE :", res);
+      setOpen(true);
+      router.navigate('/income');
+    }).catch((err) => {
+      const e = err as AxiosError;
+      console.log(e);
+    }).finally(() => {
+      setLoading(false)
+    })
   }
 
   return ( 
@@ -67,16 +97,22 @@ const DetailsIncomeScreen = () => {
       )}
       <ScrollView className="flex-1">
         <View className="flex-1 min-h-screen p-8">
-          <Card>
-            <CardContent className="py-4">
-              <View className="flex flex-row justify-between items-center mb-2">
-                <Muted>{income?.date}</Muted>
-                <Badge><Text>{income?.category?.name}</Text></Badge>
-              </View>
-              <H3 className="mb-4">Rp. {income?.amount.toLocaleString('id-ID')}</H3>
-              <Muted className="mb-4">{income?.description}</Muted>
-            </CardContent>
-          </Card>
+          {!loading ? (
+            <Card>
+              <CardContent className="py-4">
+                <View className="flex flex-row justify-between items-center mb-2">
+                  <Muted>{income?.name}</Muted>
+                  <Badge><Text>{income?.category?.name}</Text></Badge>
+                </View>
+                <H3 className="mb-4">Rp. {income?.amount.toLocaleString('id-ID')}</H3>
+                <Small className="mb-4">{income?.date}</Small>
+                <Muted className="mb-4">{income?.description}</Muted>
+              </CardContent>
+            </Card>
+          )
+          :(
+            <Skeleton className="w-full h-48 rounded-lg"/>
+          )}
         </View>
       </ScrollView>
       <View className="sticky bottom-0 flex-row justify-between items-center px-8 pt-6 pb-4">
