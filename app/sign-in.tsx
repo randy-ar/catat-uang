@@ -31,7 +31,7 @@ const formSchema = z.object({
 
 export default function SignInScreen() {
   const auth = getAuth();
-  const { signIn } = useSession();
+  const { signIn, saveToken } = useSession();
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
   const [errors, setErrors] = useState<FirebaseError>();
@@ -52,6 +52,10 @@ export default function SignInScreen() {
     setUser(user);
     console.log(user?.uid);
     if(user?.uid){
+      auth.currentUser?.getIdToken().then((token) => {
+        console.log(token);
+        saveToken(token);
+      });
       signIn({uid: user.uid})
     }
     if (initializing) setInitializing(false);
