@@ -11,3 +11,15 @@ export interface IncomeCategoryType{
   name: string;
   id: number;
 }
+
+export interface IncomeMonthlyReportType{
+  summary: {
+    totalCurrentMonth: number,
+    totalPreviousMonth: number,
+    percentageChange: number
+  };
+  details: {
+    currentMonthIncomes: IncomeType[];
+    previousMonthIncomes: IncomeType[];
+  }
+}

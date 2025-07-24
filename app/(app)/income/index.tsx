@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { ChevronRight, Plus, TrendingUp } from "lucide-react-native";
+import { ChevronRight, Plus, TrendingDown, TrendingUp } from "lucide-react-native";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -9,18 +9,22 @@ import { Code, H1, H3, Large, Lead, Muted, Small } from "~/components/ui/typogra
 import { useColorScheme } from "~/lib/useColorScheme";
 import { iconWithClassName } from "~/lib/icons/iconWithClassName";
 import { IncomeData } from "~/lib/constDummyData";
-import { IncomeType } from "~/lib/types/income/income";
+import { IncomeMonthlyReportType, IncomeType } from "~/lib/types/income/income";
 import api from "~/lib/useAxios"
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
 iconWithClassName(Plus);
 iconWithClassName(TrendingUp);
+iconWithClassName(TrendingDown);
 
 const IncomeScreen = () => {
   const colorScheme = useColorScheme();
   const [income, setIncome] = useState<IncomeType[]>([]);
+  const [monthlyReport, setMonthlyReport] = useState<IncomeMonthlyReportType>();
   const [loading, setLoading] = useState(false);
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
 
   useEffect(() => {
     setLoading(true);
@@ -33,6 +37,15 @@ const IncomeScreen = () => {
     .catch((err) => {
       const e = err as AxiosError;
       console.log("ERROR :", e.request)
+    })
+    api.get(`/incomes/monthly-report?year=${year}&month=${month}`)
+    .then(res => res.data)
+    .then((res) => {
+      console.log("RESPONSE :", res);
+      setMonthlyReport(res);
+    }).catch((err) => {
+      const e = err as AxiosError;
+      console.log("ERROR :", e.request)
     }).finally(() => {
       setLoading(false)
     })
@@ -43,27 +56,37 @@ const IncomeScreen = () => {
       <ScrollView className="flex-1">
         {!loading ? (
           <View className="flex-1 min-h-screen p-8">
-            <Card className="shadow-none mb-6">
-              <CardContent className="py-4">
-                <View className="flex flex-row justify-between items-center mb-2">
-                  <Muted>Total Income</Muted>
-                  <Badge variant="success" className="flex flex-row items-center justify-center gap-2">
-                    <TrendingUp className="text-green-950 dark:text-green-700" size={14}/>
-                    <Text>+ 12.5%</Text>
-                  </Badge>
-                </View>
-                <H3 className="mb-6">Rp. 1.000.000</H3>
-                <View className="flex flex-row justify-start items-center mb-3 gap-2">
-                  <Text>
-                    Trending up this month 
-                  </Text>
-                  <TrendingUp color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} size={16}/>
-                </View>
-                <Small>
-                  +12.5% since last month
-                </Small>
-              </CardContent>
-            </Card>
+            {monthlyReport && (
+              <Card className="shadow-none mb-6">
+                <CardContent className="py-4">
+                  <View className="flex flex-row justify-between items-center mb-2">
+                    <Muted>Total Income</Muted>
+                    <Badge variant={monthlyReport.summary.percentageChange < 0 ? 'danger' : 'success'} className="flex flex-row items-center justify-center gap-2">
+                      {monthlyReport.summary.percentageChange < 0 ? (
+                        <TrendingDown className={`text-rose-950 dark:text-rose-700`} size={14}/>
+                      ):(
+                        <TrendingUp className={`text-green-950 dark:text-green-700`} size={14}/>
+                      )}
+                      <Text>{monthlyReport.summary.percentageChange < 0 ? '' : '+'} {monthlyReport.summary.percentageChange}%</Text>
+                    </Badge>
+                  </View>
+                  <H3 className="mb-6">Rp. {monthlyReport.summary.totalCurrentMonth.toLocaleString('id-ID')}</H3>
+                  <View className="flex flex-row justify-start items-center mb-3 gap-2">
+                    <Text>
+                      Trending {monthlyReport.summary.percentageChange < 0 ? 'down' : 'up'} this month 
+                    </Text>
+                    {monthlyReport.summary.percentageChange < 0 ? (
+                      <TrendingDown color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} size={16}/>
+                    ) : (
+                      <TrendingUp color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} size={16}/>
+                    )}
+                  </View>
+                  <Small>
+                    {monthlyReport.summary.percentageChange < 0 ? '' : '+'} {monthlyReport.summary.percentageChange}% since last month
+                  </Small>
+                </CardContent>
+              </Card>
+            )}
             {income.map((item, index) => (
               <TouchableOpacity onPress={() => router.push(`/income/${item.id}`) }
               key={index}>
@@ -83,7 +106,7 @@ const IncomeScreen = () => {
             ))}
           </View>
         ): (
-          <View className="flex-1 justify-center items-center p-8 gap-3">
+          <View className="flex-1 min-h-screen justify-center items-center p-8 gap-3">
             <Skeleton className='h-48 w-full rounded-lg' />
             {[...Array(5)].map((_, index) => (
               <Skeleton className="h-24 w-full rounded-lg" key={index}/>

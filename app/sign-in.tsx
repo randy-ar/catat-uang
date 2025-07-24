@@ -116,7 +116,7 @@ export default function SignInScreen() {
         <Form {...form}>
           <Card className='w-full rounded-2xl'>
             <CardHeader>
-              <CardTitle className='mb-6'>Login</CardTitle>
+              <CardTitle className='mb-6'>Loginnn</CardTitle>
             </CardHeader>
             <CardContent>
               <View className='mb-4'>

@@ -3,13 +3,13 @@ import { APP_BASE_URL } from '@env';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-const baseURL = APP_BASE_URL ? `${APP_BASE_URL}/api` : 'https://67582843f2fc.ngrok-free.app/api';
-console.log("DEBUG: Axios Base URL set to:", baseURL); 
+const baseURL = `${APP_BASE_URL}/api`;
+console.log("DEBUG: Axios Base URL set to: ", baseURL); 
 axios.defaults.withCredentials = true;
 
 const api = axios.create({
   baseURL,
-  timeout: 10000,
+  timeout: 10000000,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

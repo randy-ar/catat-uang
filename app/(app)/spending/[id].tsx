@@ -1,7 +1,7 @@
 import { Portal } from "@rn-primitives/portal";
 import { router, useLocalSearchParams } from "expo-router";
 import { Trash, Trash2 } from "lucide-react-native";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
@@ -9,7 +9,7 @@ import { Muted } from "~/components/ui/typography";
 import { SpendingData } from "~/lib/constDummyData";
 import { SpendingType } from "~/lib/types/spending/spending";
 import * as Toast from '@rn-primitives/toast';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AlertDialog,
@@ -22,19 +22,51 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog';
+import api from "~/lib/useAxios";
+import { AxiosError } from "axios";
+import { Skeleton } from "~/components/ui/skeleton";
 
 
 const DetailSpendingScreen = () => {
   const { id } = useLocalSearchParams();
-  const spendingList: SpendingType[] = SpendingData;
-  const spending = spendingList.find((item) => item.id === parseInt(id as string));
+  const [spending, setSpending] = useState<SpendingType | null>(null);
+  const [loading, setLoading] = useState(false)
 
   const [open, setOpen] = useState(false);
   const insets = useSafeAreaInsets();
 
+  useEffect(() => {
+    setLoading(true)
+    api.get(`/spendings/details/${id}`)
+    .then(res => res.data)
+    .then(res => {
+      setSpending(res)
+    })
+    .catch(err => {
+      const e = err as AxiosError
+      console.log(e.toJSON())
+      Alert.alert('Error', JSON.stringify(e.toJSON()))
+    })
+    .finally(() => {
+      setLoading(false)
+    })
+  }, [])
+
   const onSubmit = () => {
-    setOpen(true);
-    router.navigate('/spending');
+    setLoading(true)
+    api.delete(`/spendings/delete/${id}`)
+    .then(res => res.data)
+    .then(res => {
+      console.log(res);
+      setOpen(true);
+      router.navigate('/spending');
+    }).catch(err => {
+      const e = err as AxiosError;
+      console.log(e.toJSON())
+      Alert.alert('Error', JSON.stringify(e.toJSON()))
+    }).finally(() => {
+      setLoading(false)
+    })
   }
 
   return ( 
@@ -67,7 +99,7 @@ const DetailSpendingScreen = () => {
       )}
       <ScrollView className="flex-1">
         <View className="flex-1 min-h-screen p-8">
-          {spending && (
+          {spending ? (
             <Card className="w-full shadow-none">
               <CardContent className="flex-1 flex flex-col h-full m-0 p-4 relative">
                 <Text className="text-xl font-bold mb-4">Purchase Receipt</Text>
@@ -92,9 +124,8 @@ const DetailSpendingScreen = () => {
                 ))}
               </CardContent>
             </Card>
-          )}
-          {!spending && (
-            <Text>Spending not found</Text>
+          ) : (
+            <Skeleton className="w-full h-48 rounded-lg"/>
           )}
         </View> 
       </ScrollView>

@@ -18,3 +18,15 @@ export interface SpendingCategoryType{
   name: string;
   id: number;
 }
+
+export interface SpendingMonthlyReportType{
+  summary: {
+    totalCurrentMonth: number,
+    totalPreviousMonth: number,
+    percentageChange: number
+  };
+  details: {
+    currentMonthIncomes: SpendingType[];
+    previousMonthIncomes: SpendingType[];
+  }
+}

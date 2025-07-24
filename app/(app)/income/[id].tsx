@@ -37,7 +37,7 @@ const DetailsIncomeScreen = () => {
 
   useEffect(() => {
     setLoading(true)
-    api.get(`/incomes/${id}`)
+    api.get(`/incomes/details/${id}`)
     .then(res => res.data)
     .then((res) => {
       setIncome(res);
@@ -53,7 +53,7 @@ const DetailsIncomeScreen = () => {
 
   const onSubmit = () => {
     setLoading(true)
-    api.delete(`/incomes/${id}`)
+    api.delete(`/incomes/delete/${id}`)
     .then(res => res.data)
     .then((res) => {
       console.log("DELETE RESPONSE :", res);
