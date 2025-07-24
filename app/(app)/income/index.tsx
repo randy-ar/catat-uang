@@ -54,7 +54,7 @@ const IncomeScreen = () => {
 
   return (
     <>
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1 bg-background">
         {!loading ? (
           <View className="flex-1 min-h-screen p-8">
             {monthlyReport && (

@@ -1,0 +1,1 @@
+globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
