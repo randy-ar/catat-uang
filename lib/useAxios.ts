@@ -1,60 +1,67 @@
-import axios from 'axios';
+// lib/useApi.ts
+import axios, { AxiosError } from 'axios';
 import { APP_BASE_URL } from '@env';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import { router } from 'expo-router';
+import { useSession } from './context'; // Import useSession
+import { useMemo } from 'react'; // Import useMemo
 
 const baseURL = `${APP_BASE_URL}/api`;
 console.log("DEBUG: Axios Base URL set to: ", baseURL); 
-axios.defaults.withCredentials = true;
 
-const api = axios.create({
-  baseURL,
-  timeout: 10000000,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  withCredentials: true,
-});
+export function useApi() {
+  const { signOut } = useSession(); // Get signOut from the hook
+  
+  const api = useMemo(() => {
+    const instance = axios.create({
+      baseURL,
+      timeout: 10000000,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      withCredentials: true,
+    });
 
-api.interceptors.request.use(
-  async (config) => {
-    let token = ''
-    if (Platform.OS === 'web') {
-      try {
-        token = localStorage.getItem('token') || ''
-      } catch (e) {
-        console.error('Local storage is unavailable:', e);
+    instance.interceptors.request.use(
+      async (config) => {
+        let token = ''
+        if (Platform.OS === 'web') {
+          try {
+            token = localStorage.getItem('token') || ''
+          } catch (e) {
+            console.error('Local storage is unavailable:', e);
+          }
+        } else {
+          token = await SecureStore.getItemAsync('token') || ''
+        }
+        if(token){
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
       }
-    } else {
-      token = await SecureStore.getItemAsync('token') || ''
-    }
-    if(token){
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  error => {
-    return Promise.reject(error);
-  }
-)
+    );
 
-// Interceptor Respons: Menangani kesalahan global atau refresh token
-api.interceptors.response.use(
-  async (response) => response,
-  async error => {
-    if(error.response && (error.response.status === 401 || error.response.status === 403)){
-      console.error('Authentication Error:', error.response.data);
-      if(Platform.OS === 'web'){
-        localStorage.removeItem('token')
-        localStorage.removeItem('session')
-      }else{
-        await SecureStore.deleteItemAsync('token')
-        await SecureStore.deleteItemAsync('session')
+    instance.interceptors.response.use(
+      async (response) => response,
+      async (error) => {
+        console.log("APAKAH SAYA TERPANGGIL?")
+        const e = error as AxiosError
+        if(e.response && (e.response?.status === 401 || e.response?.status === 403)){
+          console.error('Authentication Error:', e.response.data);
+          signOut(); // Call signOut directly from the useSession hook
+          router.navigate('/')
+        }
+        return Promise.reject(error);
       }
-    }
-    return Promise.reject(error);
-  }
-)
+    );
 
-export default api;
+    return instance;
+  }, [signOut]); // Recreate the instance if signOut changes (unlikely, but good practice)
+
+  return api;
+}

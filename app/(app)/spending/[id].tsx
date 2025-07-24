@@ -22,12 +22,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/alert-dialog';
-import api from "~/lib/useAxios";
+import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
 
 
 const DetailSpendingScreen = () => {
+  const api = useApi();
   const { id } = useLocalSearchParams();
   const [spending, setSpending] = useState<SpendingType | null>(null);
   const [loading, setLoading] = useState(false)

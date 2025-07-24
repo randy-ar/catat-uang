@@ -34,7 +34,7 @@ import React, { use, useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Portal } from '@rn-primitives/portal';
 import * as Toast from '@rn-primitives/toast';
-import api from '~/lib/useAxios';
+import { useApi } from '~/lib/useAxios';
 import { AxiosError } from "axios";
 import { Option } from "@rn-primitives/select";
 import DateTimePicker, { DateType, useDefaultStyles } from 'react-native-ui-datepicker';
@@ -67,6 +67,7 @@ const formSchema = z.object({
 });
 
 const CreateIncomeScreen = () => {
+  const api = useApi();
   const [open, setOpen] = React.useState(false);
   const [seconds, setSeconds] = React.useState(3);
   const [incomeCategories, setIncomeCategories] = React.useState<IncomeCategoryType[]>([]);

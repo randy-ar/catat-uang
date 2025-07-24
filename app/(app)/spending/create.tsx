@@ -1,7 +1,7 @@
 import { router } from "expo-router";
-import { Image as ImageIcon } from "lucide-react-native";
-import { useState } from "react";
-import { View, Alert, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Image as ImageIcon, Sparkle } from "lucide-react-native";
+import { useEffect, useRef, useState } from "react";
+import { View, Alert, Image, TouchableOpacity, ActivityIndicator, Animated } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,16 +9,56 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
 import { useColorScheme } from "~/lib/useColorScheme";
-import api from "~/lib/useAxios";
+import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { IncomeData } from "~/lib/constDummyData";
 import { IncomeType } from "~/lib/types/income/income";
 import { SpendingType } from "~/lib/types/spending/spending";
 
+const AnimatedSparkle = Animated.createAnimatedComponent(Sparkle);
+
 const CreateSpendingScreen = () => {
+  const api = useApi();
   const colorScheme = useColorScheme();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const pulseAnim = useRef(new Animated.Value(0)).current; // Nilai awal untuk animasi
+
+  useEffect(() => {
+      if (loading) {
+          // Loop animasi tanpa henti
+          Animated.loop(
+              Animated.sequence([
+                  Animated.timing(pulseAnim, {
+                      toValue: 1,
+                      duration: 1000, // Durasi animasi dari 0 ke 1
+                      useNativeDriver: true,
+                  }),
+                  Animated.timing(pulseAnim, {
+                      toValue: 0,
+                      duration: 1000, // Durasi animasi dari 1 ke 0
+                      useNativeDriver: true,
+                  }),
+              ])
+          ).start();
+      } else {
+          // Hentikan animasi jika tidak lagi loading (opsional, tergantung kebutuhan)
+          pulseAnim.stopAnimation();
+          pulseAnim.setValue(0); // Reset nilai animasi
+      }
+  }, [loading, pulseAnim]);
+
+  // Interpolasi untuk ukuran dan opacity
+  const sparkleSize = pulseAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [32, 40], // Ukuran dari 32px ke 40px
+  });
+
+  const sparkleOpacity = pulseAnim.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [0.6, 1, 0.6], // Opacity dari 60% ke 100% dan kembali ke 60%
+  });
 
 
   const pickImage = async (source: 'gallery' | 'camera') => {
@@ -149,8 +189,10 @@ const CreateSpendingScreen = () => {
         <Card className="w-full shadow-none grow border-dashed">
           <CardContent className="flex-1 flex flex-row h-full m-0 p-4 items-center justify-center relative">
             <View className="flex-1 flex flex-col items-center justify-center">
-              <ActivityIndicator size={32} color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'}/>
-              <Text className="mt-2">Uploading your image </Text>
+                <Animated.View style={{ opacity: sparkleOpacity, transform: [{ scale: sparkleSize.interpolate({ inputRange: [32, 40], outputRange: [1, 1.25] }) }] }}>
+                  <AnimatedSparkle size={sparkleSize} color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} />
+                </Animated.View>
+              <Text className="mt-3">Coverting Your Image</Text>
             </View>
           </CardContent>
         </Card>

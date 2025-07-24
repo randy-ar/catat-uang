@@ -10,7 +10,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { iconWithClassName } from "~/lib/icons/iconWithClassName";
 import { IncomeData } from "~/lib/constDummyData";
 import { IncomeMonthlyReportType, IncomeType } from "~/lib/types/income/income";
-import api from "~/lib/useAxios"
+import { useApi } from "~/lib/useAxios"
 import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -19,6 +19,7 @@ iconWithClassName(TrendingUp);
 iconWithClassName(TrendingDown);
 
 const IncomeScreen = () => {
+  const api = useApi();
   const colorScheme = useColorScheme();
   const [income, setIncome] = useState<IncomeType[]>([]);
   const [monthlyReport, setMonthlyReport] = useState<IncomeMonthlyReportType>();

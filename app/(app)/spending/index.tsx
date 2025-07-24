@@ -11,15 +11,19 @@ import { Badge } from "~/components/ui/badge";
 import { SpendingData } from "~/lib/constDummyData"
 import { SpendingMonthlyReportType, SpendingType } from "~/lib/types/spending/spending";
 import { use, useEffect, useState } from "react";
-import api from "~/lib/useAxios";
+import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
+import {Animated} from 'react-native';
+import { Easing } from "react-native-reanimated";
 iconWithClassName(ChevronRight);
 iconWithClassName(Plus);
 iconWithClassName(TrendingUp);
 iconWithClassName(TrendingDown);
 
+
 const SpendingScreen = () => {
+  const api = useApi();
   const colorScheme = useColorScheme();
   const [spending, setSpending] = useState<SpendingType[]>(SpendingData);
   const [monthlyReport, setMonthlyReport] = useState<SpendingMonthlyReportType>();
@@ -67,7 +71,7 @@ const SpendingScreen = () => {
                 <View className="flex flex-row justify-between items-center mb-2">
                   <Muted>Total Spending</Muted>
                   <Badge variant={monthlyReport.summary.percentageChange > 0 ? 'danger' : 'success'} className="flex flex-row items-center justify-center gap-2">
-                    {monthlyReport.summary.percentageChange < 0 ? (
+                    {monthlyReport.summary.percentageChange <= 0 ? (
                       <TrendingDown className={`text-green-950 dark:text-green-700`} size={14}/>
                     ):(
                       <TrendingUp className={`text-rose-950 dark:text-rose-700`} size={14}/>
@@ -78,9 +82,9 @@ const SpendingScreen = () => {
                 <H3 className="mb-6">Rp. {monthlyReport.summary.totalCurrentMonth.toLocaleString('id-ID')}</H3>
                 <View className="flex flex-row justify-start items-center mb-3 gap-2">
                   <Text>
-                    Trending {monthlyReport.summary.percentageChange < 0 ? 'down' : 'up'} this month 
+                    Trending {monthlyReport.summary.percentageChange <= 0 ? 'down' : 'up'} this month 
                   </Text>
-                  {monthlyReport.summary.percentageChange < 0 ? (
+                  {monthlyReport.summary.percentageChange <= 0 ? (
                     <TrendingDown color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} size={16}/>
                   ) : (
                     <TrendingUp color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} size={16}/>

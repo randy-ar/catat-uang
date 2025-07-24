@@ -23,11 +23,12 @@ import { Portal } from "@rn-primitives/portal";
 import * as Toast from '@rn-primitives/toast';
 import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import api from "~/lib/useAxios";
+import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
 
 const DetailsIncomeScreen = () => {
+  const api = useApi();
   const { id } = useLocalSearchParams();
   const [income, setIncome] = useState<IncomeType>();
   const [loading, setLoading] = useState(false);

@@ -70,6 +70,7 @@ export default function SignInScreen() {
 
   const onSubmitLogin = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
+    setErrors(undefined);
     try {
       await auth.signInWithEmailAndPassword(data.email, data.password);
     } catch (error) {
