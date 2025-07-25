@@ -15,10 +15,53 @@ import {
 import { Dimensions } from "react-native";
 import { H3, Lead, Muted, Small } from '~/components/ui/typography';
 import { Badge, Wallet2 } from 'lucide-react-native';
+import {
+  WalletType,
+  MarkedDatesType,
+  AreaChartSeriesType,
+  AreaChartDatasetType,
+  PieChartSeriesType,
+  MonthlyReportResponse,
+} from '~/lib/types/report/report'; // Import semua tipe yang relevan
+import { useEffect, useState } from 'react';
+import { useApi } from '~/lib/useAxios';
+import { AxiosError } from 'axios';
+import { MONTHS } from '~/lib/constants';
+import { Skeleton } from '~/components/ui/skeleton';
+
 const screenWidth = Dimensions.get("window").width;
 
+
 export default function Index() {
+  const api = useApi()
   const colorScheme = useColorScheme()
+  const [loading, setLoading] = useState(false)
+  const [wallet, setWallet] = useState<WalletType>()
+  const [markers, setMarkers] = useState<MarkedDatesType>()
+  const [dataArea, setDataArea] = useState<AreaChartSeriesType>()
+  const [dataPie, setDataPie] = useState<PieChartSeriesType>()
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
+  const monthName = MONTHS.find(m => m.id == month)?.name
+
+  useEffect(() => {
+    setLoading(true)
+    api.get(`/reports/month?year=${year}&month=${month}`)
+    .then(res => res.data)
+    .then(res => {
+      setWallet(res.wallet)
+      setMarkers(res.markedDates)
+      setDataArea(res.areaChartData)
+      setDataPie(res.pieChartData)
+    }).catch(err => {
+      const e = err as AxiosError
+      console.log(e.toJSON())
+    })
+    .finally(() => {
+      setLoading(false)
+    })
+  }, [])
+
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
@@ -33,10 +76,6 @@ export default function Index() {
         strokeWidth: 4, // optional
       }
     ],
-  };
-  const dataPie = {
-    labels: ["Swim", "Bike", "Run", "Gym", "Soccer"], // optional
-    data: [0.4, 0.6, 0.8, 0.1, 0.9]
   };
 
   const colors = {
@@ -110,21 +149,25 @@ export default function Index() {
 
   return (
     <ScrollView className='flex-1'>
+      {!loading ? (
       <View className='flex-1 justify-start p-8 min-h-screen gap-6'>
+        {wallet && (
         <Card className="shadow-none">
           <CardContent className="py-4">
             <View className="flex flex-row justify-between items-center mb-2">
               <Muted>Total Money</Muted>
               <Wallet2 size={20} color={colorScheme.colorScheme == "dark" ? "white" : "black"}/>
             </View>
-            <H3 className="mb-6">Rp. 1.000.000</H3>
+            <H3 className="mb-6">Rp. {wallet.amount.toLocaleString('id-ID')}</H3>
             <View className="flex flex-row justify-start items-center mb-3 gap-2">
               <Small>
-                Total spending in July 50%
+                Total spending in {monthName} {wallet.spendingPercent}%
               </Small>
             </View>
           </CardContent>
         </Card>
+        )}
+        {markers && (
         <Card className="shadow-none">
           <CardContent>
             <Calendar
@@ -138,25 +181,12 @@ export default function Index() {
                 console.log('month changed', month);
               }}
               // Mark specific dates as marked
-              markedDates={{
-                '2025-07-01': {dots: [
-                  {
-                    key: 'income',
-                    color: colorScheme.colorScheme === 'dark' ? colors.dark.green : colors.light.green,
-                    selectedDotColor: colorScheme.colorScheme === 'dark' ? colors.dark.green : colors.light.green,
-                  },
-                  {
-                    key: 's',
-                    color: colorScheme.colorScheme === 'dark' ? colors.dark.rose : colors.light.rose,
-                    selectedDotColor: colorScheme.colorScheme === 'dark' ? colors.dark.rose : colors.light.rose,
-                  }
-                ]},
-                '2025-07-02': {marked: true},
-                '2025-07-03': {marked: true}
-              }}
+              markedDates={markers}
             />
           </CardContent>
         </Card>
+        )}
+        {dataArea && (
         <Card className='px-0 mx-0'>
           <CardHeader className='py-0 pt-6'>
             <CardTitle>
@@ -165,7 +195,7 @@ export default function Index() {
           </CardHeader>
           <CardContent className='px-0 mx-0 mt-8 flex justify-center items-center'>
             <LineChart
-              data={data}
+              data={dataArea}
               width={screenWidth - 64}
               height={240}
               verticalLabelRotation={0}
@@ -174,6 +204,12 @@ export default function Index() {
               withInnerLines={false}
               withOuterLines={false}
               yLabelsOffset={20}
+              formatYLabel={(value) => {
+                if(parseInt(value) >= 1000000)
+                  return (parseInt(value) / 1000000).toFixed(0) + 'M'
+                return (parseInt(value) / 1000).toFixed(0) + 'K'
+                
+              }}
               xLabelsOffset={0} 
               withHorizontalLines={false}
               withVerticalLines={false}
@@ -184,6 +220,8 @@ export default function Index() {
             />
           </CardContent>
         </Card>
+        )}
+        {dataPie?.data && (
         <Card className='px-0 mx-0'>
           <CardHeader className='py-0 pt-6'>
             <CardTitle>
@@ -191,18 +229,27 @@ export default function Index() {
             </CardTitle>
           </CardHeader>
           <CardContent className='px-0 pt-0 mx-0 mt-8 flex justify-center items-center'>
-            <ProgressChart
-              data={dataPie}
-              width={screenWidth - 72}
-              height={250}
-              strokeWidth={12}
-              radius={24}
-              chartConfig={chartConfig}
-              hideLegend={false}
-            />
+              <ProgressChart
+                data={dataPie}
+                width={screenWidth - 72}
+                height={250}
+                strokeWidth={12}
+                radius={24}
+                chartConfig={chartConfig}
+                hideLegend={false}
+              />
           </CardContent>
         </Card>
+        )}
       </View>
+      ):(
+      <View className='flex-1 justify-start p-8 min-h-screen gap-6'>
+        <Skeleton className="w-full h-32"/>
+        <Skeleton className="w-full h-72"/>
+        <Skeleton className="w-full h-64"/>
+        <Skeleton className="w-full h-64"/>
+      </View>
+      )}
     </ScrollView>
   );
 }

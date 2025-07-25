@@ -52,7 +52,7 @@ export default function SignInScreen() {
     setUser(user);
     console.log(user?.uid);
     if(user?.uid){
-      auth.currentUser?.getIdToken().then((token) => {
+      getAuth().currentUser?.getIdToken().then((token) => {
         console.log(token);
         saveToken(token);
       });
@@ -64,7 +64,7 @@ export default function SignInScreen() {
   // Handle user state changes.
 
   useEffect(() => {
-    const subscriber = auth.onAuthStateChanged(onAuthStateChanged);
+    const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
     return subscriber;
   }, [])
 
@@ -72,7 +72,7 @@ export default function SignInScreen() {
     setLoading(true);
     setErrors(undefined);
     try {
-      await auth.signInWithEmailAndPassword(data.email, data.password);
+      await getAuth().signInWithEmailAndPassword(data.email, data.password);
     } catch (error) {
       const err = error as FirebaseError;
       setErrors(err);
@@ -85,7 +85,7 @@ export default function SignInScreen() {
   const onSubmitRegister = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      await auth.createUserWithEmailAndPassword(data.email, data.password);
+      await getAuth().createUserWithEmailAndPassword(data.email, data.password);
     } catch (error) {
       const err = error as FirebaseError;
       setErrors(err);
