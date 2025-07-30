@@ -350,6 +350,10 @@ const PreviewSpendingScreen = () => {
                               name: value?.label!
                             }
                             setSpending(_spending);
+                            form.setValue('category', {
+                              value: value?.value,
+                              label: value?.label!,
+                            });
                           }
                         }}
                         disabled={loading || adjusting}
@@ -364,13 +368,15 @@ const PreviewSpendingScreen = () => {
                         />
                       </SelectTrigger>
                       <SelectContent insets={{ left: 28, right: 28 }} className="w-full">
-                        <SelectGroup>
-                          {categories.map((category) => (
-                            <SelectItem key={category.value} label={category.label} value={category.value}>
-                              <Text>{category.label}</Text>
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
+                        <ScrollView>
+                          <SelectGroup>
+                            {categories.map((category) => (
+                              <SelectItem key={category.value} label={category.label} value={category.value}>
+                                <Text>{category.label}</Text>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </ScrollView>
                       </SelectContent>
                     </FormSelect>
                   )}

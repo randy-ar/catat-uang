@@ -1,5 +1,4 @@
-import { Alert, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Alert, View, ScrollView } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Calendar } from 'react-native-calendars';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
@@ -41,7 +40,8 @@ export default function Index() {
   const [dataArea, setDataArea] = useState<AreaChartSeriesType>()
   const [dataPie, setDataPie] = useState<PieChartSeriesType>()
   const year = new Date().getFullYear();
-  const month = new Date().getMonth() + 1;
+  const month = new Date().getMonth() + 1 - 1 + 1;
+
   const monthName = MONTHS.find(m => m.id == month)?.name
 
   useEffect(() => {
@@ -53,6 +53,7 @@ export default function Index() {
       setMarkers(res.markedDates)
       setDataArea(res.areaChartData)
       setDataPie(res.pieChartData)
+      console.log("PIE: ", res.pieChartData)
     }).catch(err => {
       const e = err as AxiosError
       console.log(e.toJSON())

@@ -57,7 +57,7 @@ export default function RootLayout() {
 }
 
 function RootNavigator() {
-  const { session } = useSession();
+  const { token } = useSession();
 
   return (
     <Stack
@@ -67,7 +67,7 @@ function RootNavigator() {
       }}
     >
       <Stack.Protected 
-        guard={session ? true : false}
+        guard={token ? true : false}
       >
         <Stack.Screen
           name='(app)'
@@ -78,7 +78,7 @@ function RootNavigator() {
       </Stack.Protected>
 
       <Stack.Protected
-        guard={!session}
+        guard={!token}
       >
         <Stack.Screen
           name='sign-in'

@@ -116,6 +116,10 @@ const DetailSpendingScreen = () => {
                   <Text className="w-5/12">Amount</Text>
                   <Text className="w-7/12">Rp. {spending.amount.toLocaleString('id-ID')}</Text>
                 </View>
+                <View className="flex flex-row justify-between items-center mb-1">
+                  <Text className="w-5/12">Category</Text>
+                  <Text className="w-7/12">{spending.category?.name}</Text>
+                </View>
                 <Text className="text-xl font-bold mb-4 mt-4">Items Detail</Text>
                 {spending.items.map((item, index) => (
                   <View className="flex flex-row justify-between items-center mb-1" key={index}>

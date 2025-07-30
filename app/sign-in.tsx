@@ -52,8 +52,8 @@ export default function SignInScreen() {
     setUser(user);
     console.log(user?.uid);
     if(user?.uid){
-      getAuth().currentUser?.getIdToken().then((token) => {
-        console.log(token);
+      auth.currentUser?.getIdToken(true).then((token) => {
+        console.log("AUTH TOKEN: ", token);
         saveToken(token);
       });
       signIn({uid: user.uid})
@@ -64,7 +64,7 @@ export default function SignInScreen() {
   // Handle user state changes.
 
   useEffect(() => {
-    const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = auth.onAuthStateChanged(onAuthStateChanged);
     return subscriber;
   }, [])
 
@@ -72,7 +72,7 @@ export default function SignInScreen() {
     setLoading(true);
     setErrors(undefined);
     try {
-      await getAuth().signInWithEmailAndPassword(data.email, data.password);
+      await auth.signInWithEmailAndPassword(data.email, data.password);
     } catch (error) {
       const err = error as FirebaseError;
       setErrors(err);
@@ -85,7 +85,7 @@ export default function SignInScreen() {
   const onSubmitRegister = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
-      await getAuth().createUserWithEmailAndPassword(data.email, data.password);
+      await auth.createUserWithEmailAndPassword(data.email, data.password);
     } catch (error) {
       const err = error as FirebaseError;
       setErrors(err);
@@ -117,7 +117,7 @@ export default function SignInScreen() {
         <Form {...form}>
           <Card className='w-full rounded-2xl'>
             <CardHeader>
-              <CardTitle className='mb-6'>Loginnn</CardTitle>
+              <CardTitle className='mb-6'>Login</CardTitle>
             </CardHeader>
             <CardContent>
               <View className='mb-4'>

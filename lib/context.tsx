@@ -1,5 +1,7 @@
 import { use, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
+import { Alert } from 'react-native';
+import {FIREBASE_API_KEY, APP_BASE_URL} from "@env";
 
 const AuthContext = createContext<{
   signIn: ({uid} : {uid: string}) => void;

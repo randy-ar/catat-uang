@@ -1,7 +1,7 @@
 // lib/useApi.ts
 import axios, { AxiosError } from 'axios';
 import { APP_BASE_URL } from '@env';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 import { useSession } from './context'; // Import useSession
@@ -49,10 +49,11 @@ export function useApi() {
     instance.interceptors.response.use(
       async (response) => response,
       async (error) => {
+        Alert.alert("Error", JSON.stringify(error));
         console.log("APAKAH SAYA TERPANGGIL?")
         const e = error as AxiosError
+        console.log('Axios Error:', e.response);
         if(e.response && (e.response?.status === 401 || e.response?.status === 403)){
-          console.error('Authentication Error:', e.response.data);
           signOut(); // Call signOut directly from the useSession hook
           router.navigate('/')
         }

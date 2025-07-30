@@ -95,7 +95,8 @@ const IncomeScreen = () => {
                   <CardContent className="flex-1 flex flex-row h-full m-0 p-4 items-between justify-center relative">
                     <View className="grow">
                       <Text>{item.name}</Text>
-                      <Text>{item.date}</Text>
+                      <Muted>{item.category?.name}</Muted>
+                      <Small className="mt-2">{item.date}</Small>
                     </View>
                     <View className="flex-none my-auto flex-row items-center justify-end">
                       <Text className="me-3">Rp. {item.amount.toLocaleString('id-ID')}</Text>
