@@ -107,7 +107,9 @@ const DetailsIncomeScreen = () => {
                 </View>
                 <H3 className="mb-4">Rp. {income?.amount.toLocaleString('id-ID')}</H3>
                 <Small className="mb-4">{income?.date}</Small>
-                <Muted className="mb-4">{income?.description}</Muted>
+                {income?.description && (
+                  <Muted className="mb-4">{income?.description}</Muted>
+                )}
               </CardContent>
             </Card>
           )

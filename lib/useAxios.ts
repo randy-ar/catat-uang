@@ -49,10 +49,9 @@ export function useApi() {
     instance.interceptors.response.use(
       async (response) => response,
       async (error) => {
-        Alert.alert("Error", JSON.stringify(error));
-        console.log("APAKAH SAYA TERPANGGIL?")
         const e = error as AxiosError
-        console.log('Axios Error:', e.response);
+        Alert.alert("Request Error:", `${e.cause?.message || e.message} \nURL : ${e.request?.responseURL}`)
+        console.log('Axios Error:', e.toJSON());
         if(e.response && (e.response?.status === 401 || e.response?.status === 403)){
           signOut(); // Call signOut directly from the useSession hook
           router.navigate('/')

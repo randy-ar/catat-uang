@@ -47,13 +47,23 @@ export default function Index() {
   useEffect(() => {
     setLoading(true)
     api.get(`/reports/month?year=${year}&month=${month}`)
-    .then(res => res.data)
-    .then(res => {
+    .then(res => res.data as MonthlyReportResponse)
+    .then(res => {      
       setWallet(res.wallet)
       setMarkers(res.markedDates)
-      setDataArea(res.areaChartData)
+      const mapedAreaChartData = res.areaChartData?.datasets?.map((dataset : AreaChartDatasetType, index : number) => {
+        return {
+          data: dataset.data,
+          color: (opacity = 1) => index == 0 ? `rgba(0, 130, 54, ${opacity})` : `rgba(199, 0, 54, ${opacity})`, // optional
+          strokeWidth: 4, // optional
+        }
+      })
+      const areaChart = {
+        datasets: mapedAreaChartData,
+        labels: res.areaChartData?.labels
+      }
+      setDataArea(areaChart)
       setDataPie(res.pieChartData)
-      console.log("PIE: ", res.pieChartData)
     }).catch(err => {
       const e = err as AxiosError
       console.log(e.toJSON())
@@ -216,7 +226,7 @@ export default function Index() {
               withVerticalLines={false}
               fromZero={true}
               onDataPointClick={(data) => {
-                Alert.alert(data.index.toString(), data.value.toString())
+                Alert.alert("Details", `Rp. ${data.value.toLocaleString('id-ID')}`)
               }}
             />
           </CardContent>
