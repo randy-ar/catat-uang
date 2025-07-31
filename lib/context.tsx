@@ -2,21 +2,29 @@ import { use, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
 import { Alert } from 'react-native';
 import {FIREBASE_API_KEY, APP_BASE_URL} from "@env";
+import { boolean } from 'zod';
+import { fi } from 'zod/v4/locales';
 
 const AuthContext = createContext<{
   signIn: ({uid} : {uid: string}) => void;
   saveToken: (token: string) => void;
   signOut: () => void;
+  doneJourney: () => void;
   session?: string | null;
   token?: string | null;
+  firstTime?: string | null;
   isLoading: boolean;
+  isLoadingFirstTime: boolean;
 }>({
   signIn: () => null,
   signOut: () => null,
   saveToken: () => null,
+  doneJourney: () => null,
   session: null,
   token: null,
+  firstTime: null,
   isLoading: false,
+  isLoadingFirstTime: false,
 });
 
 // This hook can be used to access the user info.
@@ -32,6 +40,9 @@ export function useSession() {
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
   const [[isLoadingToken, token], setToken] = useStorageState('token');
+  const [[isLoadingFirstTime, firstTime], setFirstTime] = useStorageState('firstTime');
+  console.log("First Time (useStorageState): ", firstTime);
+
   return (
     <AuthContext
       value={{
@@ -47,9 +58,15 @@ export function SessionProvider({ children }: PropsWithChildren) {
           setSession(null);
           setToken(null);
         },
+        doneJourney: () => {
+          setFirstTime("false");
+          console.log("First Time: ", firstTime);
+        },
         session,
         token,
+        firstTime,
         isLoading,
+        isLoadingFirstTime,
       }}>
       {children}
     </AuthContext>

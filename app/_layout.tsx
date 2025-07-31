@@ -1,7 +1,7 @@
 import '~/global.css';
 
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
-import { RelativePathString, Stack, useRouter } from 'expo-router';
+import { Redirect, RelativePathString, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { ActivityIndicator, Appearance, Platform, View } from 'react-native';
@@ -15,6 +15,7 @@ import { SessionProvider, useSession } from '~/lib/context';
 import { SplashScreenController } from '~/lib/splash';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { tr } from 'zod/v4/locales';
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   colors: NAV_THEME.light,
@@ -41,7 +42,7 @@ export default function RootLayout() {
   usePlatformSpecificSetup();
   const auth = getAuth();
   const { isDarkColorScheme } = useColorScheme();
-
+  
   return (
     <GestureHandlerRootView>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -57,7 +58,9 @@ export default function RootLayout() {
 }
 
 function RootNavigator() {
-  const { token } = useSession();
+  const { token, firstTime } = useSession();
+
+  console.log("First Time (RootNavigator): ", firstTime);
 
   return (
     <Stack
@@ -83,11 +86,21 @@ function RootNavigator() {
         <Stack.Screen
           name='sign-in'
           options={{
-            title: 'Starter Base',
+            headerShown: true,
+            title: '',
             headerRight: () => <ThemeToggle />,
           }}
         />
       </Stack.Protected>
+
+      <Stack.Screen 
+        name='onboarding'
+        options={{
+          headerShown: true,
+          title: '',
+          headerRight: () => <ThemeToggle />,
+        }}
+        />
     </Stack>
   );
 }
