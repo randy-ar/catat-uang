@@ -22,11 +22,12 @@ import {
   PieChartSeriesType,
   MonthlyReportResponse,
 } from '~/lib/types/report/report'; // Import semua tipe yang relevan
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '~/lib/useAxios';
 import { AxiosError } from 'axios';
 import { MONTHS } from '~/lib/constants';
 import { Skeleton } from '~/components/ui/skeleton';
+import { useFocusEffect } from 'expo-router';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -44,34 +45,40 @@ export default function Index() {
 
   const monthName = MONTHS.find(m => m.id == month)?.name
 
-  useEffect(() => {
-    setLoading(true)
-    api.get(`/reports/month?year=${year}&month=${month}`)
-    .then(res => res.data as MonthlyReportResponse)
-    .then(res => {      
-      setWallet(res.wallet)
-      setMarkers(res.markedDates)
-      const mapedAreaChartData = res.areaChartData?.datasets?.map((dataset : AreaChartDatasetType, index : number) => {
-        return {
-          data: dataset.data,
-          color: (opacity = 1) => index == 0 ? `rgba(0, 130, 54, ${opacity})` : `rgba(199, 0, 54, ${opacity})`, // optional
-          strokeWidth: 4, // optional
+  // run fetch ini setiap kali user membuka screen ini
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true)
+      api.get(`/reports/month?year=${year}&month=${month}`)
+      .then(res => res.data as MonthlyReportResponse)
+      .then(res => {      
+        setWallet(res.wallet)
+        setMarkers(res.markedDates)
+        const mapedAreaChartData = res.areaChartData?.datasets?.map((dataset : AreaChartDatasetType, index : number) => {
+          return {
+            data: dataset.data,
+            color: (opacity = 1) => index == 0 ? `rgba(0, 130, 54, ${opacity})` : `rgba(199, 0, 54, ${opacity})`, // optional
+            strokeWidth: 4, // optional
+          }
+        })
+        const areaChart = {
+          datasets: mapedAreaChartData,
+          labels: res.areaChartData?.labels
         }
+        setDataArea(areaChart)
+        setDataPie(res.pieChartData)
+      }).catch(err => {
+        const e = err as AxiosError
+        console.log(e.toJSON())
       })
-      const areaChart = {
-        datasets: mapedAreaChartData,
-        labels: res.areaChartData?.labels
-      }
-      setDataArea(areaChart)
-      setDataPie(res.pieChartData)
-    }).catch(err => {
-      const e = err as AxiosError
-      console.log(e.toJSON())
-    })
-    .finally(() => {
-      setLoading(false)
-    })
-  }, [])
+      .finally(() => {
+        setLoading(false)
+      })
+
+      return () => {
+      };
+    }, [api, year, month])
+  )
 
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
