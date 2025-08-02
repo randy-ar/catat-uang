@@ -110,11 +110,15 @@ const CreateIncomeScreen = () => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true)
+    
+    const parsedate = new Date(selected?.toString() ?? '');
+    parsedate.setDate(parsedate.getDate() + 1);
+
     console.log({
       name: values.name,
       amount: values.amount,
       description: values.description ?? '',
-      date: values.date?.toISOString().split('T')[0],
+      date: parsedate?.toISOString().split('T')[0],
       category: {
         id: values.category?.value,
         name: values.category?.label,
@@ -124,7 +128,7 @@ const CreateIncomeScreen = () => {
       name: values.name,
       amount: values.amount,
       description: values.description ?? '',
-      date: values.date?.toISOString().split('T')[0],
+      date: parsedate?.toISOString().split('T')[0],
       category: {
         id: values.category?.value,
         name: values.category?.label,
