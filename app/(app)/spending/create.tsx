@@ -26,38 +26,38 @@ const CreateSpendingScreen = () => {
   const pulseAnim = useRef(new Animated.Value(0)).current; // Nilai awal untuk animasi
 
   useEffect(() => {
-      if (loading) {
-          // Loop animasi tanpa henti
-          Animated.loop(
-              Animated.sequence([
-                  Animated.timing(pulseAnim, {
-                      toValue: 1,
-                      duration: 1000, // Durasi animasi dari 0 ke 1
-                      useNativeDriver: true,
-                  }),
-                  Animated.timing(pulseAnim, {
-                      toValue: 0,
-                      duration: 1000, // Durasi animasi dari 1 ke 0
-                      useNativeDriver: true,
-                  }),
-              ])
-          ).start();
-      } else {
-          // Hentikan animasi jika tidak lagi loading (opsional, tergantung kebutuhan)
-          pulseAnim.stopAnimation();
-          pulseAnim.setValue(0); // Reset nilai animasi
-      }
+    if (loading) {
+      // Loop animasi tanpa henti
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1000, // Durasi animasi dari 0 ke 1
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 0,
+            duration: 1000, // Durasi animasi dari 1 ke 0
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      // Hentikan animasi jika tidak lagi loading (opsional, tergantung kebutuhan)
+      pulseAnim.stopAnimation();
+      pulseAnim.setValue(0); // Reset nilai animasi
+    }
   }, [loading, pulseAnim]);
 
   // Interpolasi untuk ukuran dan opacity
   const sparkleSize = pulseAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [32, 40], // Ukuran dari 32px ke 40px
+    inputRange: [0, 1],
+    outputRange: [32, 40], // Ukuran dari 32px ke 40px
   });
 
   const sparkleOpacity = pulseAnim.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [0.6, 1, 0.6], // Opacity dari 60% ke 100% dan kembali ke 60%
+    inputRange: [0, 0.5, 1],
+    outputRange: [0.6, 1, 0.6], // Opacity dari 60% ke 100% dan kembali ke 60%
   });
 
 
@@ -197,7 +197,7 @@ const CreateSpendingScreen = () => {
           </CardContent>
         </Card>
       )}
-      <Button className="w-full" disabled={!imageUri} onPress={handleContinue}>
+      <Button className="w-full" disabled={!imageUri || loading} onPress={handleContinue}>
         <Text>Continue</Text>
       </Button>
     </View>

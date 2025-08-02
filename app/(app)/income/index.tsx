@@ -11,9 +11,10 @@ import { iconWithClassName } from "~/lib/icons/iconWithClassName";
 import { IncomeData } from "~/lib/constDummyData";
 import { IncomeMonthlyReportType, IncomeType } from "~/lib/types/income/income";
 import { useApi } from "~/lib/useAxios"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
+import { RefreshControl } from "react-native-gesture-handler";
 iconWithClassName(Plus);
 iconWithClassName(TrendingUp);
 iconWithClassName(TrendingDown);
@@ -26,35 +27,68 @@ const IncomeScreen = () => {
   const [loading, setLoading] = useState(false);
   const year = new Date().getFullYear();
   const month = new Date().getMonth() + 1;
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
+  const fetchIncome = (onFinally = () => {}) => {
     api.get('/incomes')
     .then(res => res.data)
     .then((res) => {
       console.log("RESPONSE :", res);
       setIncome(res);
-    })
-    .catch((err) => {
+    }).catch(err => {
       const e = err as AxiosError;
       console.log("ERROR :", e.request)
     })
+    .finally(() => {
+      onFinally();
+    })
+  }
+
+  const fetchMonthlyReport = (year: number, month: number, onFinally = () => {}) => {
     api.get(`/incomes/monthly-report?year=${year}&month=${month}`)
     .then(res => res.data)
     .then((res) => {
       console.log("RESPONSE :", res);
       setMonthlyReport(res);
-    }).catch((err) => {
-      const e = err as AxiosError;
+    }).catch(err => {
+      const e = err as AxiosError
       console.log("ERROR :", e.request)
-    }).finally(() => {
-      setLoading(false)
+    })
+    .finally(() => {
+      onFinally();
+    })
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    fetchIncome(() => {
+      setLoading(false);
+    });
+
+    setLoading(true);
+    fetchMonthlyReport(year, month, () => {
+      setLoading(false);
     })
   }, [])
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    fetchIncome(() => {
+      setRefreshing(false)
+    });
+
+    setRefreshing(true)
+    fetchMonthlyReport(year, month, () => {
+      setRefreshing(false)
+    })
+  }, []);
+
   return (
     <>
-      <ScrollView className="flex-1 bg-background">
+      <ScrollView className="flex-1 bg-background"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         {!loading ? (
           <View className="flex-1 min-h-screen p-8">
             {monthlyReport && (

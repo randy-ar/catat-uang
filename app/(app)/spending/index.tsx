@@ -10,12 +10,14 @@ import { H3, Muted, Small } from "~/components/ui/typography";
 import { Badge } from "~/components/ui/badge";
 import { SpendingData } from "~/lib/constDummyData"
 import { SpendingMonthlyReportType, SpendingType } from "~/lib/types/spending/spending";
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
 import {Animated} from 'react-native';
 import { Easing } from "react-native-reanimated";
+import { RefreshControl } from "react-native-gesture-handler";
+import { set } from "zod";
 iconWithClassName(ChevronRight);
 iconWithClassName(Plus);
 iconWithClassName(TrendingUp);
@@ -28,11 +30,13 @@ const SpendingScreen = () => {
   const [spending, setSpending] = useState<SpendingType[]>(SpendingData);
   const [monthlyReport, setMonthlyReport] = useState<SpendingMonthlyReportType>();
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   const year = new Date().getFullYear();
   const month = new Date().getMonth() + 1;
+  
 
-  useEffect(() => {
-    setLoading(true)
+  const fetchSpendings = (onFinally = () => {}) => {
     api.get('/spendings')
     .then(res => res.data)
     .then((res) => {
@@ -41,12 +45,14 @@ const SpendingScreen = () => {
     })
     .catch((err) => {
       const e = err as AxiosError;
-      console.log(err)
-    }).finally(() => {
-      setLoading(false)
+      console.log(err);
     })
+    .finally(() => {
+      onFinally();
+    })
+  }
 
-    setLoading(true)
+  const fetchMonthlyReport = (year: number, month: number, onFinally = () => {}) => {
     api.get(`/spendings/monthly-report?year=${year}&month=${month}`)
     .then(res => res.data)
     .then((res) => {
@@ -54,15 +60,43 @@ const SpendingScreen = () => {
       setMonthlyReport(res);
     }).catch((err) => {
       const e = err as AxiosError;
-      console.log("ERROR :", e.request)
-    }).finally(() => {
+      console.log(err);
+    })
+    .finally(() => {
+      onFinally();
+    })
+  }
+  
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchSpendings(() => {
+      setRefreshing(false);
+    });
+
+    setRefreshing(true)
+    fetchMonthlyReport(year, month, () => {
+      setRefreshing(false)
+    })
+  }, []);
+
+  useEffect(() => {
+    setLoading(true)
+    fetchSpendings(() => {
+      setLoading(false);
+    });
+
+    setLoading(true)
+    fetchMonthlyReport(year, month, () => {
       setLoading(false)
     })
   }, [])
 
   return ( 
     <>
-      <ScrollView className="flex-1 bg-background">
+      <ScrollView className="flex-1 bg-background"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         {!loading ? (
         <View className="flex-1 min-h-screen p-8">
           {monthlyReport && (
@@ -76,13 +110,13 @@ const SpendingScreen = () => {
                     ):(
                       <TrendingUp className={`text-rose-950 dark:text-rose-700`} size={14}/>
                     )}
-                    <Text>{monthlyReport.summary.percentageChange > 0 ? '' : '+'} {monthlyReport.summary.percentageChange}%</Text>
+                    <Text>{monthlyReport.summary.percentageChange > 0 ? '+' : ''} {monthlyReport.summary.percentageChange}%</Text>
                   </Badge>
                 </View>
                 <H3 className="mb-6">Rp. {monthlyReport.summary.totalCurrentMonth.toLocaleString('id-ID')}</H3>
                 <View className="flex flex-row justify-start items-center mb-3 gap-2">
                   <Text>
-                    Trending {monthlyReport.summary.percentageChange <= 0 ? 'down' : 'up'} this month 
+                    Trending {monthlyReport.summary.percentageChange <= 0 ? 'good' : 'bad'} this month 
                   </Text>
                   {monthlyReport.summary.percentageChange <= 0 ? (
                     <TrendingDown color={colorScheme.colorScheme === 'dark' ? 'white' : 'black'} size={16}/>
@@ -91,7 +125,7 @@ const SpendingScreen = () => {
                   )}
                 </View>
                 <Small>
-                  {monthlyReport.summary.percentageChange > 0 ? '' : '+'} {monthlyReport.summary.percentageChange}% since last month
+                  {monthlyReport.summary.percentageChange > 0 ? '+' : ''} {monthlyReport.summary.percentageChange}% since last month
                 </Small>
               </CardContent>
             </Card>

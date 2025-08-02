@@ -28,6 +28,7 @@ import { AxiosError } from 'axios';
 import { MONTHS } from '~/lib/constants';
 import { Skeleton } from '~/components/ui/skeleton';
 import { useFocusEffect } from 'expo-router';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -40,45 +41,58 @@ export default function Index() {
   const [markers, setMarkers] = useState<MarkedDatesType>()
   const [dataArea, setDataArea] = useState<AreaChartSeriesType>()
   const [dataPie, setDataPie] = useState<PieChartSeriesType>()
+  const [refreshing, setRefreshing] = useState(false);
+
+
+  const fetchMonthlyReport = (year: number, month: number, onFinally = () => {}) => {
+    api.get(`/reports/month?year=${year}&month=${month}`)
+    .then(res => res.data as MonthlyReportResponse)
+    .then(res => {      
+      setWallet(res.wallet)
+      setMarkers(res.markedDates)
+      setWallet(res.wallet)
+      setMarkers(res.markedDates)
+      const mapedAreaChartData = res.areaChartData?.datasets?.map((dataset : AreaChartDatasetType, index : number) => {
+        return {
+          data: dataset.data,
+          color: (opacity = 1) => index == 0 ? `rgba(0, 130, 54, ${opacity})` : `rgba(199, 0, 54, ${opacity})`, // optional
+          strokeWidth: 4, // optional
+        }
+      })
+      const areaChart = {
+        datasets: mapedAreaChartData,
+        labels: res.areaChartData?.labels
+      }
+      setDataArea(areaChart)
+      setDataPie(res.pieChartData)
+    }).catch(err => {
+      const e = err as AxiosError
+      console.log(e.toJSON())
+    })
+    .finally(() => {
+      onFinally();
+    })
+  }
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchMonthlyReport(year, month, () => {
+      setRefreshing(false);
+    })
+  }, []);
+
   const year = new Date().getFullYear();
   const month = new Date().getMonth() + 1 - 1 + 1;
 
   const monthName = MONTHS.find(m => m.id == month)?.name
 
   // run fetch ini setiap kali user membuka screen ini
-  useFocusEffect(
-    useCallback(() => {
-      setLoading(true)
-      api.get(`/reports/month?year=${year}&month=${month}`)
-      .then(res => res.data as MonthlyReportResponse)
-      .then(res => {      
-        setWallet(res.wallet)
-        setMarkers(res.markedDates)
-        const mapedAreaChartData = res.areaChartData?.datasets?.map((dataset : AreaChartDatasetType, index : number) => {
-          return {
-            data: dataset.data,
-            color: (opacity = 1) => index == 0 ? `rgba(0, 130, 54, ${opacity})` : `rgba(199, 0, 54, ${opacity})`, // optional
-            strokeWidth: 4, // optional
-          }
-        })
-        const areaChart = {
-          datasets: mapedAreaChartData,
-          labels: res.areaChartData?.labels
-        }
-        setDataArea(areaChart)
-        setDataPie(res.pieChartData)
-      }).catch(err => {
-        const e = err as AxiosError
-        console.log(e.toJSON())
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-
-      return () => {
-      };
-    }, [api, year, month])
-  )
+  useEffect(() => {
+    setLoading(true)
+    fetchMonthlyReport(year, month, () => {
+      setLoading(false)
+    })
+  }, [])
 
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -166,7 +180,10 @@ export default function Index() {
   };
 
   return (
-    <ScrollView className='flex-1'>
+    <ScrollView className='flex-1'
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       {!loading ? (
       <View className='flex-1 justify-start p-8 min-h-screen gap-6'>
         {wallet && (
