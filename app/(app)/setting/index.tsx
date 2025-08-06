@@ -19,6 +19,8 @@ import {
   BottomSheetView,
   useBottomSheetModal
 } from '@gorhom/bottom-sheet';
+import { Small } from "~/components/ui/typography";
+var pkg = require('~/package.json');
 iconWithClassName(Info)
 iconWithClassName(ChevronRight)
 iconWithClassName(MoonStar)
@@ -250,6 +252,9 @@ const renderAboutAppsContent = (lang: string | null, isDarkColorScheme: boolean 
         <Text className="text-base text-foreground mb-4 text-dark text-justify">
           Aplikasi ini bersifat terbuka untuk kolaborasi. Jika Anda tertarik untuk berkontribusi, baik sebagai pengembang atau dalam bentuk lain, silakan kunjungi repositori GitHub kami di:
         </Text>
+        <Text className="text-base text-foreground font-medium mb-5 text-dark">
+          Versi : {pkg.version}
+        </Text>
         <Button variant={isDarkColorScheme ? 'secondary' : 'default'} className="flex-row items-center text-dark">
           <Github className="text-white me-2"/>
           <Text className="text-white" onPress={() => Linking.openURL('https://github.com/randy-ar/catat-uang')}>
@@ -270,6 +275,9 @@ const renderAboutAppsContent = (lang: string | null, isDarkColorScheme: boolean 
       </Text>
       <Text className="text-base text-foreground mb-4 text-dark text-justify">
         This application is open for collaboration. If you are interested in contributing, whether as a developer or in another form, please visit our GitHub repository at:
+      </Text>
+      <Text className="text-base text-foreground font-medium mb-5 text-dark">
+        Version : {pkg.version}
       </Text>
       <Button variant={isDarkColorScheme ? 'secondary' : 'default'} className="flex-row items-center text-dark">
         <Github className="text-white me-2"/>
@@ -465,6 +473,7 @@ const SettingScreen = () => {
           <LogOut size={16} color={'white'} />
           <Text className="text-sm ms-2 font-medium">Sign Out</Text>
         </Button>
+        <Small className="text-center text-sm my-8 text-stone-400">Version : {pkg.version}</Small>
         <BottomSheetModal
             ref={bottomSheetModalRef}
             onChange={handleSheetChanges}
