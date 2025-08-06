@@ -1,7 +1,7 @@
 import { Portal } from "@rn-primitives/portal";
 import { router, useLocalSearchParams } from "expo-router";
 import { Trash, Trash2 } from "lucide-react-native";
-import { Alert, Image, ScrollView, View } from "react-native";
+import { Alert, Image, ScrollView, View, Dimensions } from "react-native";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Text } from "~/components/ui/text";
@@ -25,6 +25,8 @@ import {
 import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
+import { calculateHeight, getAspectRatio, normalizeAspectRatio } from "~/lib/useImageResponsive";
+import ResponsiveImageScreen from "~/components/ui/responsive-image";
 
 
 const DetailSpendingScreen = () => {
@@ -129,9 +131,9 @@ const DetailSpendingScreen = () => {
                 ))}
                 <Text className="text-xl font-bold mb-4 mt-4">Image</Text>
                   {spending.receiptImage ? (
-                      <Image source={{
-                        uri: spending.receiptImage.uri,
-                      }} resizeMode="contain" className={`w-full border border-gray-300/80 aspect-[${spending.receiptImage.width}/${spending.receiptImage.height}] rounded-lg object-fit`}/>
+                      <ResponsiveImageScreen
+                       source={spending.receiptImage}
+                      resizeMode="contain" className={`w-full border border-gray-300/80 rounded-lg object-fit`}/>
                   ) : (
                     <Text>Image can't be loaded.</Text> // Fallback
                   )}

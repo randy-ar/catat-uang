@@ -308,7 +308,7 @@ const SettingScreen = () => {
   }, []);
 
   // variables
-	const snapPoints = useMemo(() => ["60%", "100%"], []);
+	const snapPoints = useMemo(() => ["40%", "60%", "100%"], []);
 
 	// renders
 	const renderBackdrop = useCallback(

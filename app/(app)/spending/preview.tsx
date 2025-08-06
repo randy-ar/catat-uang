@@ -32,6 +32,9 @@ import { AxiosError } from "axios";
 import { Muted } from "~/components/ui/typography";
 import {Animated, Image} from 'react-native';
 import { Easing } from "react-native-reanimated";
+import { getAspectRatio } from "~/lib/useImageResponsive";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import ResponsiveImageScreen from "~/components/ui/responsive-image";
 
 const AnimatedSparkle = Animated.createAnimatedComponent(Sparkle);
 
@@ -278,9 +281,7 @@ const PreviewSpendingScreen = () => {
                   ))}
                   <Text className="text-xl font-bold mb-4 mt-4">Image</Text>
                   {spending.receiptImage ? (
-                      <Image source={{
-                        uri: spending.receiptImage.uri,
-                      }} resizeMode="contain" className={`w-full border border-gray-300/80 aspect-[${spending.receiptImage.width}/${spending.receiptImage.height}] rounded-lg object-fit`}/>
+                      <ResponsiveImageScreen source={spending.receiptImage} resizeMode="contain" className={`w-full border border-gray-300/80 rounded-lg object-fit`}/>
                   ) : (
                     <Text>No image selected or loaded.</Text> // Fallback
                   )}
