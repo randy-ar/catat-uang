@@ -14,7 +14,7 @@ import { use, useCallback, useEffect, useState } from "react";
 import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Skeleton } from "~/components/ui/skeleton";
-import {Animated} from 'react-native';
+import {Animated, Image} from 'react-native';
 import { Easing } from "react-native-reanimated";
 import { RefreshControl } from "react-native-gesture-handler";
 import { set } from "zod";

@@ -1,7 +1,6 @@
 import { Image as ImageIcon, Save, RefreshCcw, Sparkle } from "lucide-react-native";
 import { ActivityIndicator, Alert, ImageSourcePropType, KeyboardAvoidingView, View} from "react-native";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { Image } from 'expo-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
@@ -31,7 +30,7 @@ import { SpendingType } from "~/lib/types/spending/spending";
 import { useApi } from "~/lib/useAxios";
 import { AxiosError } from "axios";
 import { Muted } from "~/components/ui/typography";
-import {Animated} from 'react-native';
+import {Animated, Image} from 'react-native';
 import { Easing } from "react-native-reanimated";
 
 const AnimatedSparkle = Animated.createAnimatedComponent(Sparkle);
@@ -53,15 +52,13 @@ const PreviewSpendingScreen = () => {
   const api = useApi();
   const [open, setOpen] = useState(false);
   const [seconds, setSeconds] = useState(3);
-  const {image, spendingData} = useLocalSearchParams<{image: string, spendingData: string}>();
+  const {spendingData} = useLocalSearchParams<{spendingData: string}>();
   const [spending, setSpending] = useState<SpendingType | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
   const pulseAnim = useRef(new Animated.Value(0)).current; // Nilai awal untuk animasi
   const colorScheme = useColorScheme();
-  const { image: paramImageUri } = useLocalSearchParams<{ image: string }>(); // Ambil dari params
-  const [displayImageUri, setDisplayImageUri] = useState<string | null>(paramImageUri || null); // State untuk URI gambar
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,32 +70,13 @@ const PreviewSpendingScreen = () => {
     },
   })
 
-  console.log("DISPLAY IMAGE URI: ", displayImageUri);
   const insets = useSafeAreaInsets();
-  const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
-    left: 12,
-    right: 12,
-  };
-
   
   // Mencoba untuk render image dari local storage TODO:
   useEffect(() => {
     setLoading(true)
-    const loadImageFromStorage = async () => {
-      try {
-        const storedUri = await FileSystem.getContentUriAsync(image);
-        console.log("Loaded image from storage:", storedUri);
-        if (storedUri) {
-          setDisplayImageUri(storedUri);
-          console.log("Loaded image from storage:", storedUri);
-        }
-      } catch (e) {
-        console.error("Failed to load image from storage:", e);
-      }
-    };
-    loadImageFromStorage();
+    console.log("PREVIEW SCREEN: ")
+    console.log(spendingData);
     setSpending(JSON.parse(spendingData));
     api.get('/spendings/categories')
     .then(res => res.data)
@@ -298,12 +276,14 @@ const PreviewSpendingScreen = () => {
 
                     </View>
                   ))}
-                  {/* <Text className="text-xl font-bold mb-4 mt-4">Image</Text>
-                  {displayImageUri ? (
-                    <Image key={displayImageUri} source={{ uri: displayImageUri, width: 200, height: 200 }} contentFit="contain" className="w-full h-full rounded-lg object-fit" />
+                  <Text className="text-xl font-bold mb-4 mt-4">Image</Text>
+                  {spending.receiptImage ? (
+                      <Image source={{
+                        uri: spending.receiptImage.uri,
+                      }} resizeMode="contain" className={`w-full border border-gray-300/80 aspect-[${spending.receiptImage.width}/${spending.receiptImage.height}] rounded-lg object-fit`}/>
                   ) : (
                     <Text>No image selected or loaded.</Text> // Fallback
-                  )} */}
+                  )}
                 </CardContent>
               </Card>
               <Text className="text-xl font-bold mb-0 mt-4">Adjust this if you think it's incorrect</Text>

@@ -1,9 +1,12 @@
+import { ImageBase64 } from "../image.dtype";
+
 export interface SpendingType{
   name: string;
   id: number;
   date: string;
   amount: number;
   category?: SpendingCategoryType;
+  receiptImage?: ImageBase64;
   items: SpendingItemsType[];
 }
 

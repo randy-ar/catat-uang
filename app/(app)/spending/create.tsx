@@ -153,7 +153,6 @@ const CreateSpendingScreen = () => {
         })
         .then(res => res.data)
         .then((res) => {
-          console.log(res)
           router.navigate({ pathname: '/spending/preview', params: { image: savedUri, spendingData: JSON.stringify((res.spending as SpendingType)) } });
         }).catch((err) => {
           const e = err as AxiosError;
