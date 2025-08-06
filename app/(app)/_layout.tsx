@@ -13,7 +13,7 @@ export default function TabsLayout() {
         options={{
           title: 'Spending',
           tabBarIcon: (tab) => <ShoppingCart color={tab.color}/>,
-          headerRight: () => <ThemeToggle />,
+          headerLeft: () => <ThemeToggle />,
           headerShown: false
         }}
       />
@@ -22,10 +22,10 @@ export default function TabsLayout() {
         options={{
           title: 'Report',
           tabBarIcon: (tab) => <PieChart color={tab.color}/>,
-          headerRight: () => <ThemeToggle />,
-          headerLeft: () => {
+          headerLeft: () => <View className='ms-4'><ThemeToggle /></View>,
+          headerRight: () => {
             return (
-              <View className="ms-3">
+              <View className="me-4">
                 <SignOutButton />
               </View>
             )
@@ -37,9 +37,17 @@ export default function TabsLayout() {
         options={{
           title: 'Income',
           tabBarIcon: (tab) => <PiggyBank color={tab.color}/>,
-          headerRight: () => <ThemeToggle />,
+          headerLeft: () => <ThemeToggle />,
           headerShown: false
         }}
+      />
+      <Tabs.Screen 
+        name="setting" 
+        options={{ 
+          href: null, // This tab will not appear in the tab bar
+          title: '',
+          headerShown: false,
+        }} 
       />
     </Tabs>
   );

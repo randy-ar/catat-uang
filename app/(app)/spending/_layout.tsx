@@ -10,7 +10,6 @@ export default function SpendingLayout() {
     <Stack 
       screenOptions={{
         headerShown: true,
-        headerRight: () => <ThemeToggle />,
         headerTitleAlign: 'center',
       }}
     >
@@ -18,8 +17,8 @@ export default function SpendingLayout() {
         name="index"
         options={{
           title: '',
-          headerRight: () => <ThemeToggle />,
-          headerLeft: () => {
+          headerLeft: () => <ThemeToggle />,
+          headerRight: () => {
             return <SignOutButton />;
           },
         }}

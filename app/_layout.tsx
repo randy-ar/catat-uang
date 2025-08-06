@@ -15,7 +15,8 @@ import { SessionProvider, useSession } from '~/lib/context';
 import { SplashScreenController } from '~/lib/splash';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { tr } from 'zod/v4/locales';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   colors: NAV_THEME.light,
@@ -47,9 +48,11 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
         <SessionProvider>
-          <SplashScreenController />
-          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-          <RootNavigator />
+          <BottomSheetModalProvider>
+            <SplashScreenController />
+            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+            <RootNavigator />
+          </BottomSheetModalProvider>
         </SessionProvider>
         <PortalHost />
       </ThemeProvider>

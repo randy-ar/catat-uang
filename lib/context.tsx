@@ -10,21 +10,25 @@ const AuthContext = createContext<{
   saveToken: (token: string) => void;
   signOut: () => void;
   doneJourney: () => void;
+  setLang: (lang: string) => void;
   session?: string | null;
   token?: string | null;
   firstTime?: string | null;
   isLoading: boolean;
   isLoadingFirstTime: boolean;
+  lang: string | null;
 }>({
   signIn: () => null,
   signOut: () => null,
   saveToken: () => null,
   doneJourney: () => null,
+  setLang: () => null,
   session: null,
   token: null,
   firstTime: null,
   isLoading: false,
   isLoadingFirstTime: false,
+  lang: "en",
 });
 
 // This hook can be used to access the user info.
@@ -41,6 +45,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, session], setSession] = useStorageState('session');
   const [[isLoadingToken, token], setToken] = useStorageState('token');
   const [[isLoadingFirstTime, firstTime], setFirstTime] = useStorageState('firstTime');
+  const [[isLoadingLang, lang], setLang] = useStorageState('lang');
   console.log("First Time (useStorageState): ", firstTime);
 
   return (
@@ -62,11 +67,15 @@ export function SessionProvider({ children }: PropsWithChildren) {
           setFirstTime("false");
           console.log("First Time: ", firstTime);
         },
+        setLang: (lang) => {
+          setLang(lang);
+        },
         session,
         token,
         firstTime,
         isLoading,
         isLoadingFirstTime,
+        lang,
       }}>
       {children}
     </AuthContext>
